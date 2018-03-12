@@ -19,6 +19,14 @@ DoubleResetDetector::DoubleResetDetector(int timeout, int address) {
 	waitingForDoubleReset = false;
 }
 
+DoubleResetDetector::DoubleResetDetector(int timeout, int address, void (*callback)(bool waitState)) {
+	this->timeout = timeout*1000;
+	this->address = address;
+	doubleResetDetected = false;
+	waitingForDoubleReset = false;
+	this->callback = callback;
+}
+
 bool DoubleResetDetector::detectDoubleReset() {
 	doubleResetDetected = detectRecentlyResetFlag();
 	if (doubleResetDetected) {
@@ -26,6 +34,9 @@ bool DoubleResetDetector::detectDoubleReset() {
 	} else {
 		setRecentlyResetFlag();
 		waitingForDoubleReset = true;
+		if (callback != nullptr) {
+			callback(waitingForDoubleReset);
+		}
 	}
 	return doubleResetDetected;
 }
@@ -37,6 +48,9 @@ void DoubleResetDetector::loop() {
 void DoubleResetDetector::stop() {
 	clearRecentlyResetFlag();
 	waitingForDoubleReset = false;
+		if (callback != nullptr) {
+			callback(waitingForDoubleReset);
+		}
 }
 
 bool DoubleResetDetector::detectRecentlyResetFlag() {

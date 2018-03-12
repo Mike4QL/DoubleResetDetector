@@ -14,7 +14,7 @@
 #include <WProgram.h>
 #endif
 
-#define DOUBLERESETDETECTOR_VERSION "1.0.0"
+#define DOUBLERESETDETECTOR_VERSION "1.1.0"
 #define DOUBLERESETDETECTOR_FLAG_SET 0xD0D01234
 #define DOUBLERESETDETECTOR_FLAG_CLEAR 0xD0D04321
 
@@ -22,6 +22,7 @@ class DoubleResetDetector
 {
 public:
 	DoubleResetDetector(int timeout, int address);
+	DoubleResetDetector(int timeout, int address, void (*callback)(bool waitState));
 	bool detectDoubleReset();
 	bool doubleResetDetected;
 	void loop();
@@ -35,5 +36,6 @@ private:
 	void clearRecentlyResetFlag();
 	void setRecentlyResetFlag();
 	uint32_t doubleResetDetectorFlag;
+	void (*callback)(bool waitState);
 };
 #endif // DoubleResetDetector_H__
